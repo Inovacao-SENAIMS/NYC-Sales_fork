@@ -2,3 +2,4 @@
 /test
 .venv
 /venv
+.DS_Store
