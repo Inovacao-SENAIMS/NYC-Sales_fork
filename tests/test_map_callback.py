@@ -33,6 +33,21 @@ class MapCallbackTests(unittest.TestCase):
         self.assertEqual(list(figure.data[0].marker.color), [1, 2, 3])
         self.assertEqual(figure.data[0].marker.colorbar.title.text, "Total units")
 
+    def test_larger_values_produce_larger_markers(self):
+        figure = _map.build_map_figure(self.sales, 0, 6, "SALE PRICE")
+        sizes = list(figure.data[0].marker.size)
+        self.assertLess(sizes[0], sizes[2])
+        self.assertLess(sizes[2], sizes[1])
+        self.assertAlmostEqual(min(sizes), 8)
+        self.assertAlmostEqual(max(sizes), 24)
+
+    def test_equal_values_produce_finite_equal_marker_sizes(self):
+        sales = self.sales.copy()
+        sales["TOTAL UNITS"] = 1
+        figure = _map.build_map_figure(sales, 0, 6, "TOTAL UNITS")
+        sizes = list(figure.data[0].marker.size)
+        self.assertEqual(sizes, [8, 8, 8])
+
     def test_empty_results_have_an_explanation(self):
         self.assertTrue(hasattr(_map, "build_map_figure"), "Map builder is missing")
         figure = _map.build_map_figure(self.sales, 5, 0, "SALE PRICE")

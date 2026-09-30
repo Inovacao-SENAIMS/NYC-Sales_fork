@@ -1,11 +1,21 @@
 from dash import dcc, html
-from math import asinh, degrees, log2, pi, radians, sinh, atan, tan
+from math import asinh, degrees, log1p, log2, pi, radians, sinh, atan, tan
 
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.colors import get_colorscale
 
 from components.filtering import VARIABLE_LABELS, filter_sales
+
+
+def marker_sizes(values):
+    """Grow exponentially from 8 to 24 px, reducing the influence of outliers."""
+    logarithms = values.map(log1p)
+    span = logarithms.max() - logarithms.min()
+    if span == 0:
+        return [8] * len(values)
+    normalized = (logarithms - logarithms.min()) / span
+    return (8 * 3 ** normalized).tolist()
 
 
 def map_view(located):
@@ -54,7 +64,9 @@ def build_map_figure(sales, borough, area_index, variable):
             customdata=located[["SALE PRICE", "size_m2", "YEAR BUILT", "TOTAL UNITS"]].values.tolist(),
             mode="markers",
             marker={
-                "size": 9, "opacity": 0.8, "color": located[variable].tolist(),
+                "size": marker_sizes(located[variable]),
+                "sizemode": "diameter", "opacity": 0.8,
+                "color": located[variable].tolist(),
                 "coloraxis": None,
                 "colorscale": get_colorscale("Rainbow"),
                 "showscale": True,
