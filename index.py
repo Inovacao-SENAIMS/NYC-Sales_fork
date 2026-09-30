@@ -4,42 +4,34 @@ from app import app
 from components._controllers import controllers
 from components._histogram import histogram
 from components._map import map
-from components.callbacks import register_map_callback
+from components.callbacks import register_dashboard_callback
 from components.data_loader import load_sales_data
 
 df_data = load_sales_data()
 
-page_heading = html.Div([
-    html.P("NEW YORK CITY · REAL ESTATE", className="eyebrow"),
-    html.H1("Real Estate Sales Dashboard"),
-    html.P(
-        "Explore the NYC real estate market through interactive visualizations of sales data.",
-        className="page-description",
-    ),
-])
-
-page_header = html.Header([
-    html.Div([
+sidebar = html.Aside([
+    html.Header([
         html.Img(
             id="logo", src=app.get_asset_url("logo_dark.png"),
             alt="NYC Sales", className="brand-logo",
         ),
-        page_heading,
-    ], className="brand-heading"),
-    html.Span("Market overview", className="header-tag"),
-], className="page-header")
+        html.P("NEW YORK CITY", className="eyebrow"),
+        html.H1("Vendas de imóveis - NYC"),
+        html.P(
+            "Analise as vendas de imóveis em Nova Iorque "
+            "entre setembro de 2016 e agosto de 2017.",
+            className="page-description",
+        ),
+    ], className="sidebar-header"),
+    controllers,
+], className="dashboard-sidebar", **{"aria-label": "Identificação e filtros"})
 
 app.layout = html.Main([
-    page_header,
-    controllers,
+    sidebar,
     html.Div([map, histogram], className="charts-stack"),
-    html.Footer(
-        "NYC Real Estate Sales · Geographic overview & sales distribution",
-        className="page-footer",
-    ),
 ], className="dashboard-shell")
 
-register_map_callback(app, df_data)
+register_dashboard_callback(app, df_data)
 
 if __name__ == "__main__":
     app.run(debug=True, port=8050)
