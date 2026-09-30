@@ -59,6 +59,13 @@ class MapCallbackTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         figure = response.get_json()["response"]["map-graph"]["figure"]
         self.assertEqual(figure["data"][0]["type"], "scattermap")
+        self.assertEqual(figure["layout"]["map"]["style"], "carto-darkmatter")
+        self.assertNotIn("mapbox", figure["layout"])
+
+    def test_zoom_adapts_to_geographic_extent(self):
+        wide = _map.build_map_figure(self.sales, 0, 6, "SALE PRICE")
+        narrow = _map.build_map_figure(self.sales, 1, 0, "SALE PRICE")
+        self.assertGreater(narrow.layout.map.zoom, wide.layout.map.zoom)
 
 
 if __name__ == "__main__":
