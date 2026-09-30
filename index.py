@@ -4,7 +4,7 @@ from app import app
 from components._controllers import controllers
 from components._histogram import histogram
 from components._map import map
-from components.callbacks import register_histogram_callback, register_map_callback
+from components.callbacks import register_dashboard_callback
 from components.data_loader import load_sales_data
 
 df_data = load_sales_data()
@@ -31,8 +31,7 @@ app.layout = html.Main([
     html.Div([map, histogram], className="charts-stack"),
 ], className="dashboard-shell")
 
-register_map_callback(app, df_data)
-register_histogram_callback(app, df_data)
+register_dashboard_callback(app, df_data)
 
 if __name__ == "__main__":
     app.run(debug=True, port=8050)

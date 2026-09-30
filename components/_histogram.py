@@ -1,19 +1,21 @@
 from dash import dcc, html
 import plotly.graph_objects as go
+import plotly.express as px
 
-from components.filtering import VARIABLE_LABELS, filter_sales
+from components.filtering import VARIABLE_LABELS
 
 
-def build_histogram_figure(sales, borough, area_index, variable):
+def build_histogram_figure(filtered, variable):
     """Show the selected variable for all sales matching the shared filters."""
-    filtered = filter_sales(sales, borough, area_index)
     figure = go.Figure()
     if not filtered.empty:
-        figure.add_trace(go.Histogram(
-            x=filtered[variable].tolist(), nbinsx=50,
+        figure = px.histogram(filtered, x=variable, opacity=0.75)
+        figure.update_traces(x=None)
+        figure.update_traces(
+            x=filtered[variable].tolist(),
             marker={"color": "#42678c", "line": {"color": "#a0a9b3", "width": 0.5}},
             hovertemplate="%{x}<br>%{y} vendas<extra></extra>",
-        ))
+        )
     else:
         figure.add_annotation(
             text="Nenhuma venda encontrada para os filtros selecionados.",
